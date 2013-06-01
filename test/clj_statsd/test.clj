@@ -36,7 +36,7 @@
   (should-send-expected-stat "gaugor:333|g" 3 3
     (gauge "gaugor" 333)
     (gauge :gaugor 333)
-    (gauge "gaugor" 333 :rate 1)))
+    (gauge "gaugor" 333 {:rate 1})))
 
 (deftest should-send-unique
   (should-send-expected-stat "unique:765|s" 2 2
@@ -50,7 +50,7 @@
 
 (deftest should-send-timing-with-provided-rate
   (should-send-expected-stat "glork:320|ms|@0.990000" 1 10
-    (dotimes [n 10] (timing "glork" 320 :rate 0.99))))
+    (dotimes [n 10] (timing "glork" 320 {:rate 0.99}))))
 
 (deftest should-not-send-stat-without-cfg
   (with-redefs [cfg (atom nil)]
@@ -59,7 +59,7 @@
 (deftest should-time-code
   (let [cnt (atom 0)]
     (with-redefs [timing
-                  (fn [k v & {:keys [rate]}]
+                  (fn [k v {:keys [rate]}]
                     (is (= "test.time" k))
                     (is (>= v 200))
                     (is (= 1.0 rate))

@@ -46,7 +46,8 @@
 (defn publish
   "Send a metric over the network, based on the provided sampling rate.
   This should be a fully formatted statsd metric line."
-  [^String content rate]
+  [^String content {:keys [rate]
+                    :or {rate 1.0}}]
   (let [prefix (:prefix @cfg)
         content (if prefix (str prefix content) content)]
     (cond
@@ -57,39 +58,38 @@
 (defn increment
   "Increment a counter at specified rate, defaults to a one increment
   with a 1.0 rate"
-  ([k]        (increment k 1 :rate 1.0))
-  ([k v]      (increment k v :rate 1.0))
-  ([k v & {:keys [rate]}] (publish (format "%s:%d|c" (name k) v) rate)))
+  ([k]        (increment k 1))
+  ([k v]      (increment k v {:rate 1.0}))
+  ([k v args] (publish (format "%s:%d|c" (name k) v) args)))
 
 (defn timing
   "Time an event at specified rate, defaults to 1.0 rate"
-  ([k v]      (timing k v :rate 1.0))
-  ([k v & {:keys [rate]}] (publish (format "%s:%d|ms" (name k) v) rate)))
+  ([k v]      (timing k v {:rate 1.0}))
+  ([k v args] (publish (format "%s:%d|ms" (name k) v) args)))
 
 (defn decrement
   "Decrement a counter at specified rate, defaults to a one decrement
   with a 1.0 rate"
-  ([k]        (increment k -1 :rate 1.0))
-  ([k v]      (increment k (* -1 v) :rate 1.0))
-  ([k v & {:keys [rate]}] (increment k (* -1 v) rate)))
+  ([k]        (increment k -1))
+  ([k v]      (increment k (* -1 v) {:rate 1.0}))
+  ([k v args] (increment k (* -1 v) args)))
 
 (defn gauge
   "Send an arbitrary value."
-  ([k v]      (gauge k v :rate 1.0))
-  ([k v & {:keys [rate]}] (publish (format "%s:%d|g" (name k) v) rate)))
+  ([k v]      (gauge k v {:rate 1.0}))
+  ([k v args] (publish (format "%s:%d|g" (name k) v) args)))
 
 (defn unique
   "Send an event, unique occurences of which per flush interval
-   will be counted by the statsd server. We have no rate call
-   signature here because that wouldn't make much sense."
-  ([k v] (publish (format "%s:%d|s" (name k) v) 1.0)))
+   will be counted by the statsd server."
+  ([k v] (publish (format "%s:%d|s" (name k) v) {})))
 
 (defmacro with-sampled-timing
   "Time the execution of the provided code, with sampling."
   [k rate & body]
   `(let [start# (System/currentTimeMillis)
          result# (do ~@body)]
-    (timing ~k (- (System/currentTimeMillis) start#) :rate ~rate)
+    (timing ~k (- (System/currentTimeMillis) start#) {:rate ~rate})
     result#))
 
 (defmacro with-timing
