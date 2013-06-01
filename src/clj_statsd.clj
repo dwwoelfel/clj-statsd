@@ -57,26 +57,26 @@
 (defn increment
   "Increment a counter at specified rate, defaults to a one increment
   with a 1.0 rate"
-  ([k]        (increment k 1 1.0))
-  ([k v]      (increment k v 1.0))
-  ([k v rate] (publish (format "%s:%d|c" (name k) v) rate)))
+  ([k]        (increment k 1 :rate 1.0))
+  ([k v]      (increment k v :rate 1.0))
+  ([k v & {:keys [rate]}] (publish (format "%s:%d|c" (name k) v) rate)))
 
 (defn timing
   "Time an event at specified rate, defaults to 1.0 rate"
-  ([k v]      (timing k v 1.0))
-  ([k v rate] (publish (format "%s:%d|ms" (name k) v) rate)))
+  ([k v]      (timing k v :rate 1.0))
+  ([k v & {:keys [rate]}] (publish (format "%s:%d|ms" (name k) v) rate)))
 
 (defn decrement
   "Decrement a counter at specified rate, defaults to a one decrement
   with a 1.0 rate"
-  ([k]        (increment k -1 1.0))
-  ([k v]      (increment k (* -1 v) 1.0))
-  ([k v rate] (increment k (* -1 v) rate)))
+  ([k]        (increment k -1 :rate 1.0))
+  ([k v]      (increment k (* -1 v) :rate 1.0))
+  ([k v & {:keys [rate]}] (increment k (* -1 v) rate)))
 
 (defn gauge
   "Send an arbitrary value."
-  ([k v]      (gauge k v 1.0))
-  ([k v rate] (publish (format "%s:%d|g" (name k) v) rate)))
+  ([k v]      (gauge k v :rate 1.0))
+  ([k v & {:keys [rate]}] (publish (format "%s:%d|g" (name k) v) rate)))
 
 (defn unique
   "Send an event, unique occurences of which per flush interval
