@@ -46,13 +46,18 @@
 (defn publish
   "Send a metric over the network, based on the provided sampling rate.
   This should be a fully formatted statsd metric line."
-  [^String content {:keys [rate]
+  [^String content {:keys [rate tags]
                     :or {rate 1.0}}]
   (let [prefix (:prefix @cfg)
-        content (if prefix (str prefix content) content)]
+        content (if prefix (str prefix content) content)
+        tag-content (if-not tags
+                      ""
+                      (format "|#%s" (clojure.string/join "," tags)))]
     (cond
       (nil? @cfg) nil
-      (<= (.nextDouble ^Random (:random @cfg)) rate) (send-stat (format "%s|@%f" content (float rate))))))
+
+      (<= (.nextDouble ^Random (:random @cfg)) rate)
+      (send-stat (format "%s|@%f%s" content (float rate) tag-content)))))
 
 (defn increment
   "Increment a counter at specified rate, defaults to a one increment
