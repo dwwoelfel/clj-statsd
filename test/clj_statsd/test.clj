@@ -52,6 +52,19 @@
   (should-send-expected-stat "glork:320|ms|@0.990000" 1 10
     (dotimes [n 10] (timing "glork" 320 {:rate 0.99}))))
 
+(deftest should-send-tags
+  (should-send-expected-stat "gorets:-1|c|@1.000000|#country:usa" 2 2
+    (decrement "gorets" 1 {:tags ["country:usa"]})
+    (decrement :gorets 1 {:tags [:country:usa]}))
+  (should-send-expected-stat "gaugor:333|g|@1.000000|#country:usa,state:ny" 2 2
+    (gauge "gaugor" 333 {:tags ["country:usa" "state:ny"]})
+    (gauge :gaugor 333 {:tags [:country:usa :state:ny]}))
+
+  (should-send-expected-stat "glork:320|ms|@1.000000|#country:canada,other" 2 2
+    (timing "glork" 320 {:tags ["country:canada" "other"]})
+    (timing "glork" 320 {:tags [:country:canada :other]})))
+
+
 (deftest should-not-send-stat-without-cfg
   (with-redefs [cfg (atom nil)]
     (should-send-expected-stat "gorets:1|c|@1.000000" 0 0 (increment "gorets"))))
