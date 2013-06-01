@@ -56,6 +56,8 @@
     (cond
       (nil? @cfg) nil
 
+      (>= rate 1.0) (send-stat (format "%s%s" content tag-content))
+
       (<= (.nextDouble ^Random (:random @cfg)) rate)
       (send-stat (format "%s|@%f%s" content (float rate) tag-content)))))
 
