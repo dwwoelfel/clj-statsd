@@ -89,7 +89,7 @@
   [k rate & body]
   `(let [start# (System/currentTimeMillis)
          result# (do ~@body)]
-    (timing ~k (- (System/currentTimeMillis) start#) ~rate)
+    (timing ~k (- (System/currentTimeMillis) start#) :rate ~rate)
     result#))
 
 (defmacro with-timing
