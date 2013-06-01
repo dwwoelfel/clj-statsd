@@ -52,7 +52,6 @@
         content (if prefix (str prefix content) content)]
     (cond
       (nil? @cfg) nil
-      (>= rate 1.0) (send-stat content)
       (<= (.nextDouble ^Random (:random @cfg)) rate) (send-stat (format "%s|@%f" content rate)))))
 
 (defn increment
