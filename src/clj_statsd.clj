@@ -52,7 +52,7 @@
         content (if prefix (str prefix content) content)
         tag-content (if-not tags
                       ""
-                      (format "|#%s" (clojure.string/join "," tags)))]
+                      (format "|#%s" (clojure.string/join "," (map name tags))))]
     (cond
       (nil? @cfg) nil
 
