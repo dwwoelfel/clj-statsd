@@ -17,34 +17,34 @@
     (is (and (>= @counter# ~min-times) (<= @counter# ~max-times)) (str "send-stat called " @counter# " times"))))
 
 (deftest should-send-increment
-  (should-send-expected-stat "gorets:1|c" 3 3
+  (should-send-expected-stat "gorets:1|c|@1.000000" 3 3
     (increment "gorets")
     (increment :gorets)
     (increment "gorets" 1))
-  (should-send-expected-stat "gorets:7|c" 1 1
+  (should-send-expected-stat "gorets:7|c|@1.000000" 1 1
     (increment :gorets 7)))
 
 (deftest should-send-decrement
-  (should-send-expected-stat "gorets:-1|c" 3 3
+  (should-send-expected-stat "gorets:-1|c|@1.000000" 3 3
     (decrement "gorets")
     (decrement :gorets)
     (decrement "gorets", 1))
-  (should-send-expected-stat "gorets:-7|c" 1 1
+  (should-send-expected-stat "gorets:-7|c|@1.000000" 1 1
     (decrement :gorets 7)))
 
 (deftest should-send-gauge
-  (should-send-expected-stat "gaugor:333|g" 3 3
+  (should-send-expected-stat "gaugor:333|g|@1.000000" 3 3
     (gauge "gaugor" 333)
     (gauge :gaugor 333)
     (gauge "gaugor" 333 {:rate 1})))
 
 (deftest should-send-unique
-  (should-send-expected-stat "unique:765|s" 2 2
+  (should-send-expected-stat "unique:765|s|@1.000000" 2 2
     (unique "unique" 765)
     (unique :unique 765)))
 
 (deftest should-send-timing-with-default-rate
-  (should-send-expected-stat "glork:320|ms" 2 2
+  (should-send-expected-stat "glork:320|ms|@1.000000" 2 2
     (timing "glork" 320)  
     (timing :glork 320)))
 
@@ -54,7 +54,7 @@
 
 (deftest should-not-send-stat-without-cfg
   (with-redefs [cfg (atom nil)]
-    (should-send-expected-stat "gorets:1|c" 0 0 (increment "gorets"))))
+    (should-send-expected-stat "gorets:1|c|@1.000000" 0 0 (increment "gorets"))))
 
 (deftest should-time-code
   (let [cnt (atom 0)]
@@ -73,6 +73,6 @@
 (deftest should-prefix
   (with-redefs [cfg (atom nil)]
     (setup "localhost" 8125 :prefix "test.stats.")
-    (should-send-expected-stat "test.stats.gorets:1|c" 2 2
+    (should-send-expected-stat "test.stats.gorets:1|c|@1.000000" 2 2
       (increment "gorets")
       (increment :gorets))))

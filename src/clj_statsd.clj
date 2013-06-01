@@ -52,7 +52,7 @@
         content (if prefix (str prefix content) content)]
     (cond
       (nil? @cfg) nil
-      (<= (.nextDouble ^Random (:random @cfg)) rate) (send-stat (format "%s|@%f" content rate)))))
+      (<= (.nextDouble ^Random (:random @cfg)) rate) (send-stat (format "%s|@%f" content (float rate))))))
 
 (defn increment
   "Increment a counter at specified rate, defaults to a one increment
