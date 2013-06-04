@@ -90,15 +90,24 @@
    will be counted by the statsd server."
   ([k v] (publish (format "%s:%d|s" (name k) v) {})))
 
-(defmacro with-sampled-timing
-  "Time the execution of the provided code, with sampling."
-  [k rate & body]
+(defmacro with-sampled-tagged-timing
+  "Time the execution of the provided code, with sampling and tags."
+  [k rate tags & body]
   `(let [start# (System/currentTimeMillis)
          result# (do ~@body)]
-    (timing ~k (- (System/currentTimeMillis) start#) {:rate ~rate})
+    (timing ~k (- (System/currentTimeMillis) start#) {:rate ~rate :tags ~tags})
     result#))
+
+(defmacro with-sampled-timing
+  [k rate & body]
+  `(with-sampled-tagged-timing ~k 1.0 nil ~@body))
+
+(defmacro with-tagged-timing
+  [k tags & body]
+  `(with-sampled-tagged-timing ~k 1.0 ~tags ~@body))
 
 (defmacro with-timing
   "Time the execution of the provided code."
   [k & body]
   `(with-sampled-timing ~k 1.0 ~@body))
+
