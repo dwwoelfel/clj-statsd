@@ -81,6 +81,23 @@
         (Thread/sleep 200))
       (with-sampled-timing "test.time" 1.0
         (Thread/sleep 200))
+      (with-sampled-tagged-timing "test.time" 1.0 nil
+        (Thread/sleep 200))
+      (is (= @cnt 3)))))
+
+(deftest should-tag-time-code
+  (let [cnt (atom 0)]
+    (with-redefs [timing
+                  (fn [k v {:keys [rate tags]}]
+                    (is (= "test.time" k))
+                    (is (>= v 200))
+                    (is (= 1.0 rate))
+                    (is (= tags [:a :b]))
+                    (swap! cnt inc))]
+      (with-tagged-timing "test.time" [:a :b]
+        (Thread/sleep 200))
+      (with-sampled-tagged-timing "test.time" 1.0 [:a :b]
+        (Thread/sleep 200))
       (is (= @cnt 2)))))
 
 (deftest should-prefix
